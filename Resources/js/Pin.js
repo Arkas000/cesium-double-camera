@@ -1,5 +1,5 @@
 /**
- *
+ * This is the single control point of the CameraPath. It includes an instance of PinControls.
  * @param properties
  * @constructor
  * cameraDirection
@@ -44,11 +44,9 @@ Pin.prototype.showControls = function() {
         this._controls = new PinControls(this._viewer, this.position);
     }
     this._controls.show();
-    console.log("show");
 }
 
 Pin.prototype.hideControls = function() {
-    console.log("hide");
     this._controls.hide();
 }
 
