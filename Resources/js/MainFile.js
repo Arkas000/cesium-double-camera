@@ -14,8 +14,12 @@ function startup(Cesium) {
     // ---------------------------------------------------------
     mainViewer = new Cesium.Viewer('cesiumContainer', {
         timeline : true,
-        animation : true
+        animation : true,
+        contextOptions: {
+            webgl:{preserveDrawingBuffer:true}
+        }
     });
+
     mainViewer.clock.shouldAnimate = true;
     mainViewer.clock.clockRange = Cesium.ClockRange.LOOP_STOP;
     mainViewer.scene.debugShowFramesPerSecond = true;
@@ -44,7 +48,11 @@ function startup(Cesium) {
         geocoder: false,
         baseLayerPicker: false,
         fullscreenButton: false,
-        scene3DOnly: true
+        scene3DOnly: true,
+
+        contextOptions: {
+            webgl:{preserveDrawingBuffer:true}
+        }
 
     });
 
@@ -106,7 +114,35 @@ function startup(Cesium) {
             },Cesium.ScreenSpaceEventType.LEFT_CLICK);*/
         }
 
+
+        //Example of Video Recording
+        var canvas = ($( "#cesiumContainer2").find('div').filter('[class=cesium-widget]')).find('canvas');
+        var recorder = new PNGSequence( canvas[0] );
+        recorder.capture(15);
+        // Record 10 seconds
+        var result;
+        setTimeout(function(){
+            result = recorder.stop();
+            console.log(result[20])
+            var idx = 0;
+            var canvasPng = $("#testPNGC")[0];
+            var canvasCtx = canvasPng.getContext("2d");
+
+            var image = new Image();
+            image.onload = function() {
+                canvasCtx.drawImage(image, 0, 0);
+            };
+
+            setInterval(function(){
+                image.src = result[idx];
+                idx++;
+                idx %= result.length;
+            },1000/15);
+
+        }, 10000 )
     }, 20);
+
+;
 
 
     //Sandcastle_End

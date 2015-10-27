@@ -1,3 +1,9 @@
+/**
+ *  This is used to manage all the functions of the arrows
+ * @param viewer
+ * @param position
+ * @constructor
+ */
 function PinControls(viewer, position) {
     this._viewer = viewer;
     this.position = position;
@@ -33,6 +39,7 @@ PinControls.prototype.show = function() {
     if(!this._xArrow) {
         this._xArrow = this._createModel("Resources/gltf/myRedArrow.gltf", "red", 0, -90, 0);
         this._xArrow.readyPromise.then(function(model) {
+            that._xArrow.cull = false;
             that._xArrowMaterial = that._xArrow.getMaterial('Red');
             that._xArrowMaterial.setValue('diffuse', Cesium.Cartesian4.fromColor(Cesium.Color.RED));
             that._xArrowSavedEmission = that._xArrowMaterial.getValue('emission').clone();
@@ -42,6 +49,7 @@ PinControls.prototype.show = function() {
 
     if(!this._yArrow) {
         this._yArrow = this._createModel("Resources/gltf/myRedArrow.gltf", "blue", 0, 0, -90);
+
         this._yArrow.readyPromise.then(function(model) {
             that._yArrowMaterial = that._yArrow.getMaterial('Red');
             that._yArrowMaterial.setValue('diffuse', Cesium.Cartesian4.fromColor(Cesium.Color.BLUE));
@@ -91,7 +99,7 @@ PinControls.prototype._createModel = function(url, name, heading, pitch, roll) {
         minimumPixelSize : 128,          // never smaller than 128 pixels
         allowPicking : true,
         debugShowBoundingVolume : false,
-        debugWireframe : false
+        debugWireframe : false,
     }));
 }
 

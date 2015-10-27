@@ -1,3 +1,9 @@
+/**
+ * This is a path that can be used for various operations.
+ * It is composed of 0 or more Pins
+ * @param viewer
+ * @constructor
+ */
 function CameraPath(viewer) {
     this._viewer = viewer;
     this._pinCollection = [];
@@ -22,17 +28,6 @@ CameraPath.prototype.addPin = function(position, offsetTime) {
 
 CameraPath.prototype.length = function() {
     return this._pinCollection.length;
-}
-
-/**
- * idx: pin index
- * position: new Cartesian3 position
- */
-CameraPath.prototype.movePin = function(idx,position) {
-    if(idx < this._pinCollection.length) {
-        this._pinCollection[idx].move(position);
-        this._upToDate = false;
-    }
 }
 
 var updateCheck = function() {
