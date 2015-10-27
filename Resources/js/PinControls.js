@@ -51,7 +51,6 @@ PinControls.prototype.show = function() {
         this._yArrow = this._createModel("Resources/gltf/myRedArrow.gltf", "blue", 0, 0, -90);
 
         this._yArrow.readyPromise.then(function(model) {
-            that._yArrow.cull = false;
             that._yArrowMaterial = that._yArrow.getMaterial('Red');
             that._yArrowMaterial.setValue('diffuse', Cesium.Cartesian4.fromColor(Cesium.Color.BLUE));
             that._yArrowSavedEmission = that._yArrowMaterial.getValue('emission').clone();
@@ -62,7 +61,6 @@ PinControls.prototype.show = function() {
     if(!this._heightArrow) {
         this._heightArrow = this._createModel("Resources/gltf/myRedArrow.gltf", "green", 0, 0, 0);
         this._heightArrow.readyPromise.then(function(model) {
-            that._heightArrow.cull = false;
             that._heightArrowMaterial = that._heightArrow.getMaterial('Red');
             that._heightArrowMaterial.setValue('diffuse', Cesium.Cartesian4.fromColor(Cesium.Color.GREEN));
             that._heightArrowSavedEmission = that._heightArrowMaterial.getValue('emission').clone();
