@@ -17,8 +17,9 @@ function CameraController(viewer) {
     this._attachedViews = [];
 
     this._viewer.clock.onTick.addEventListener(syncFun, this);
+
+    this._recBtn = undefined;
 }
-var pippo;
 /**
  * Use this function to chose what type of cameraController will be used
  * @param type (string): mouse | path
@@ -118,16 +119,59 @@ CameraController.prototype.enableCurveGeneration = function() {
                 delay = 0;
             }
 
+            //var cartographic = Cesium.Ellipsoid.WGS84.cartesianToCartographic(cartesian);
+
             var pin = that._cameraPath.addPin(cartesian, delay);
             var lookAtPin = that._lookAtPath.addPin(cartesian, delay);
 
             that._entity.show = true;
             that._lookAtEntity.show = true;
 
+            //First point added
             if(that._cameraPath.length() == 1) {
                 that._viewer.clock.startTime = that._viewer.clock.currentTime;
             } else {
                 that._viewer.clock.stopTime = that._cameraPath.getStopTime(that._viewer.clock.startTime);
+            }
+
+            if(that._cameraPath.length() == 2) {
+                if(that._attachedViews.length > 0) {
+                    var interval = null;
+                    //create a button to record
+                    that._recBtn = document.createElement("button");
+                    that._recBtn.appendChild(document.createTextNode("\u25CF Rec"));
+                    that._recBtn.id = "recBtn";
+
+                    var thatX = that;
+                    //Add listener to the button to activate the recording function
+                    that._recBtn.addEventListener('click', function () {
+                        var targetContainer = "#" + thatX._attachedViews[0]._container.id;
+                        //get the target canvas
+                        var canvas = ($(targetContainer).find('div').filter('[class=cesium-widget]')).find('canvas');
+                        var fps = 24;
+                        var recorder = new Movie( canvas[0], fps );
+                        thatX._viewer.clock.shouldAnimate = false;
+                        thatX._viewer.clock.currentTime = thatX._viewer.clock.startTime;
+                        //var totalTime = Cesium.JulianDate.compare(thatX._viewer.clock.stopTime, thatX._viewer.clock.startTime) * 1000;
+
+                        // Record
+                        var regInterval = setInterval(function() {
+                            recorder.addFrame();
+
+                            var updatedTime = Cesium.JulianDate.now();
+                            Cesium.JulianDate.addSeconds(thatX._viewer.clock.currentTime, 1/fps, updatedTime);
+                            if(Cesium.JulianDate.compare(thatX._viewer.clock.stopTime,updatedTime) >= 0) {
+                                thatX._viewer.clock.currentTime = updatedTime;
+                            }
+                            else {
+                                clearInterval(regInterval);
+                                var result = recorder.stop();
+                            }
+                        },1000/fps);
+                    }, false);
+                    document.body.appendChild(that._recBtn);
+                    applyStyleToButton("recBtn");
+                }
             }
 
             that._entity.position = that._cameraPath.getPositions(that._viewer.clock.startTime);
@@ -358,4 +402,17 @@ function changeHeight(cartesian, height) {
     cartesian.x = cartesian2.x;
     cartesian.y = cartesian2.y;
     cartesian.z = cartesian2.z;
+}
+
+function applyStyleToButton(buttonId) {
+    var $recBtn = $("#"+buttonId);
+
+    var style = "position:absolute; box-shadow: rgb(255, 255, 255) 0px 1px 0px 0px inset; " +
+        "border-radius: 6px; border: 1px solid rgb(220, 220, 220); display: inline-block; " +
+        "cursor: pointer; color: rgb(255, 0, 0); font-family: Arial; font-size: 15px; font-weight: bold; " +
+        "padding: 6px 11px; text-decoration: none; text-shadow: rgb(255, 255, 255) 0px 1px 0px; " +
+        "background: linear-gradient(rgb(249, 249, 249) 5%, rgb(233, 233, 233) 100%) rgb(249, 249, 249);"
+    $recBtn.attr("style", style);
+
+
 }
